@@ -167,7 +167,7 @@ export default function Home() {
       })
       
       // Close the dialog directly
-      setAddBookDialog(false)
+      setAddBookDialogOpen(false)
     }
   }
   
