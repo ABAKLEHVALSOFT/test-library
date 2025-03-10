@@ -378,7 +378,7 @@ export default function Home() {
     }
   };
   
-  // First, update the helper function to extract book recommendations from AI responses
+  // Update the extractBookRecommendation function to prioritize existing books
   const extractBookRecommendation = (message: string): Book | null => {
     // Look for patterns like "Title by Author" or "I recommend Title by Author"
     const titleAuthorRegex = /"([^"]+)"\s+by\s+([^,.]+)/i;
@@ -388,7 +388,20 @@ export default function Home() {
       const title = match[1];
       const author = match[2].trim();
       
-      // Try to extract genre
+      // First, check if this book already exists in the library
+      const existingBook = books.find(book => 
+        book.title.toLowerCase().includes(title.toLowerCase()) || 
+        title.toLowerCase().includes(book.title.toLowerCase()) &&
+        (book.author.toLowerCase().includes(author.toLowerCase()) || 
+         author.toLowerCase().includes(book.author.toLowerCase()))
+      );
+      
+      // If the book exists in the library, return that book
+      if (existingBook) {
+        return existingBook;
+      }
+      
+      // If not found in library, extract other details for a new book
       let genre = "Fiction"; // Default genre
       const genreRegex = /genre(?:\s+is|\:)?\s+([^,.]+)/i;
       const genreMatch = message.match(genreRegex);
@@ -396,7 +409,6 @@ export default function Home() {
         genre = genreMatch[1].trim();
       }
       
-      // Try to extract year
       let year = "";
       const yearRegex = /(?:published|from|in)\s+(\d{4})/i;
       const yearMatch = message.match(yearRegex);
@@ -404,20 +416,14 @@ export default function Home() {
         year = yearMatch[1];
       }
       
-      // Check if this book exists in the library and get its availability
-      const existingBook = books.find(b => 
-        b.title.toLowerCase() === title.toLowerCase() && 
-        b.author.toLowerCase() === author.toLowerCase()
-      );
-      
+      // Create a new book recommendation
       return {
-        id: existingBook?.id || `rec-${Date.now()}`,
+        id: `rec-${Date.now()}`,
         title,
         author,
         genre,
         year,
-        isCheckedOut: existingBook?.isCheckedOut || false,
-        checkedOutDate: existingBook?.checkedOutDate
+        isCheckedOut: false
       };
     }
     
@@ -467,13 +473,12 @@ export default function Home() {
           Your purpose is to help users discover books they might enjoy and manage their digital library.
           ${libraryContext}
           
-          IMPORTANT FORMATTING INSTRUCTIONS:
-          1. Keep your responses concise (under 100 words).
-          2. When recommending books, format them as: "Title" by Author (Year) - Genre
-          3. Only recommend one book at a time.
-          4. When recommending books from the user's library, always mention whether they are available or checked out.
-          5. If a user asks about a specific book, tell them if it's in their library and whether it's available.
-          6. Focus on being helpful rather than verbose.
+          IMPORTANT INSTRUCTIONS:
+          1. When users ask for recommendations, PRIORITIZE suggesting books from their EXISTING library.
+          2. Only suggest new books if the user specifically asks for new recommendations or if their library doesn't contain suitable books.
+          3. Keep your responses concise (under 100 words).
+          4. When recommending books, format them as: "Title" by Author (Year) - Genre
+          5. When recommending books from the user's library, always mention whether they are available or checked out.
           
           If asked to recommend books, suggest titles based on the user's preferences and library.
           You can suggest both books from their existing collection and new books they might enjoy.`
