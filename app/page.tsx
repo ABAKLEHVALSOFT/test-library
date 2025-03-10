@@ -287,11 +287,11 @@ export default function Home() {
       Ensure a diverse mix of genres, time periods, and writing styles. Include both well-known classics and creative fictional works.`;
       
       // Call Azure OpenAI API
-      const response = await fetch('https://valstone-prod-openai.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2023-05-15', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.NEXT_PUBLIC_AZURE_OPENAI_DEPLOYMENT_NAME}/chat/completions?api-version=${process.env.NEXT_PUBLIC_AZURE_OPENAI_API_VERSION}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-key': 'c15e05017b07470f86d6192aa2755d37'
+          'api-key': process.env.NEXT_PUBLIC_AZURE_OPENAI_API_KEY || ''
         },
         body: JSON.stringify({
           messages: [
@@ -487,11 +487,11 @@ export default function Home() {
       ];
       
       // Call Azure OpenAI API
-      const response = await fetch('https://valstone-prod-openai.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2023-05-15', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.NEXT_PUBLIC_AZURE_OPENAI_DEPLOYMENT_NAME}/chat/completions?api-version=${process.env.NEXT_PUBLIC_AZURE_OPENAI_API_VERSION}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-key': 'c15e05017b07470f86d6192aa2755d37'
+          'api-key': process.env.NEXT_PUBLIC_AZURE_OPENAI_API_KEY || ''
         },
         body: JSON.stringify({
           messages,
